@@ -5,6 +5,7 @@ load_dotenv()
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 HUBSPOT_ACCESS_TOKEN = os.getenv("HUBSPOT_ACCESS_TOKEN", "")
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 
 CLAUDE_MODEL = "claude-sonnet-4-6"
 

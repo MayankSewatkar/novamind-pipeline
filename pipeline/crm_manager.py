@@ -122,24 +122,57 @@ def create_email_campaign(newsletter: dict, persona_key: str, blog_title: str) -
         return mock_id
 
 
-def log_campaign(campaign_id: str, blog: dict, newsletter_ids: dict[str, str]) -> None:
+def log_campaign(
+    campaign_id: str,
+    blog: dict,
+    newsletter_ids: dict[str, str],
+    status: str = "PENDING_APPROVAL",
+) -> None:
     """Persist campaign metadata to local JSON as the CRM campaign log."""
     Path(CAMPAIGNS_DIR).mkdir(parents=True, exist_ok=True)
     log = {
         "campaign_id": campaign_id,
         "blog_title": blog["title"],
         "blog_slug": blog.get("slug", ""),
-        "send_date": datetime.utcnow().isoformat(),
+        "created_date": datetime.utcnow().isoformat(),
+        "send_date": None,
         "newsletter_ids": newsletter_ids,
-        "status": "SENT",
+        "status": status,
     }
     log_path = Path(CAMPAIGNS_DIR) / f"{campaign_id}.json"
     log_path.write_text(json.dumps(log, indent=2))
-    print(f"[crm] Campaign logged → {log_path}")
+    print(f"[crm] Campaign logged as {status} → {log_path}")
+
+
+def approve_and_send(campaign_id: str, newsletters: dict) -> dict[str, str]:
+    """
+    Mark a PENDING_APPROVAL campaign as SENT and trigger real email delivery.
+    Calls Resend for actual delivery if RESEND_API_KEY is set.
+    Returns newsletter_ids (unchanged — just updates status).
+    """
+    from pipeline import email_sender
+
+    log_path = Path(CAMPAIGNS_DIR) / f"{campaign_id}.json"
+    if not log_path.exists():
+        raise FileNotFoundError(f"Campaign {campaign_id} not found")
+
+    log = json.loads(log_path.read_text())
+    if log["status"] == "SENT":
+        print(f"[crm] Campaign {campaign_id} already sent.")
+        return log["newsletter_ids"]
+
+    print(f"[crm] Approving campaign {campaign_id} — sending emails...")
+    email_sender.send_campaign(MOCK_CONTACTS, newsletters)
+
+    log["status"] = "SENT"
+    log["send_date"] = datetime.utcnow().isoformat()
+    log_path.write_text(json.dumps(log, indent=2))
+    print(f"[crm] Campaign {campaign_id} marked SENT.")
+    return log["newsletter_ids"]
 
 
 def run(campaign_id: str, blog: dict, newsletters: dict) -> dict[str, str]:
-    """Seed contacts, create per-persona emails, log campaign. Returns newsletter_ids map."""
+    """Seed contacts, create per-persona email drafts in HubSpot, log as PENDING_APPROVAL."""
     seed_contacts()
 
     newsletter_ids: dict[str, str] = {}
@@ -147,5 +180,5 @@ def run(campaign_id: str, blog: dict, newsletters: dict) -> dict[str, str]:
         email_id = create_email_campaign(newsletter, persona_key, blog["title"])
         newsletter_ids[persona_key] = email_id
 
-    log_campaign(campaign_id, blog, newsletter_ids)
+    log_campaign(campaign_id, blog, newsletter_ids, status="PENDING_APPROVAL")
     return newsletter_ids

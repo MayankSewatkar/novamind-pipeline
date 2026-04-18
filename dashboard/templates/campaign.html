@@ -42,6 +42,15 @@
   <div class="topbar">
     <a href="/">← Dashboard</a>
     <h1>{{ blog.title if blog else campaign_id }}</h1>
+    {% if campaign_meta and campaign_meta.status == 'PENDING_APPROVAL' %}
+    <form action="/approve/{{ campaign_id }}" method="post" style="margin-left:auto">
+      <button type="submit" style="background:#059669;color:white;border:none;border-radius:8px;padding:10px 20px;font-weight:600;cursor:pointer;font-size:0.9rem;">
+        Approve &amp; Send
+      </button>
+    </form>
+    {% elif campaign_meta %}
+    <span style="margin-left:auto;background:rgba(255,255,255,0.15);padding:6px 14px;border-radius:999px;font-size:0.78rem;font-weight:600;">SENT</span>
+    {% endif %}
   </div>
   <div class="container">
 

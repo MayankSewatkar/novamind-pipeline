@@ -10,6 +10,7 @@ import anthropic
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, PERSONAS, CONTENT_DIR
+from pipeline import performance_memory
 
 
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -27,10 +28,14 @@ def _call_claude(system: str, user: str, max_tokens: int = 2048) -> str:
 
 def generate_blog(topic: str) -> dict:
     """Generate a blog outline + ~400-600 word draft on a given topic."""
+    memory_context = performance_memory.as_prompt_context()
+    memory_section = f"\n\n{memory_context}" if memory_context else ""
+
     system = (
         "You are a senior content strategist at NovaMind, an AI startup helping small creative "
         "agencies automate their daily workflows. Write engaging, authoritative content that "
         "speaks to agency operators and creatives. Keep writing sharp and jargon-free."
+        f"{memory_section}"
     )
     user = f"""Write a blog post about: "{topic}"
 
@@ -63,6 +68,9 @@ def generate_newsletters(blog: dict) -> dict:
         "Write newsletter emails that feel personal and drive clicks — not corporate blasts."
     )
 
+    memory_context = performance_memory.as_prompt_context()
+    memory_section = f"\n\n{memory_context}" if memory_context else ""
+
     for persona_key, persona in PERSONAS.items():
         user = f"""Write a short newsletter email promoting this blog post to the '{persona["name"]}' persona.
 
@@ -73,7 +81,7 @@ Persona profile:
 
 Blog post title: {blog["title"]}
 Blog summary: {blog["meta_description"]}
-
+{memory_section}
 Return valid JSON with exactly this structure:
 {{
   "subject_line": "email subject (max 60 chars)",

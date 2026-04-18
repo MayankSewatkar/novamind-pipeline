@@ -10,6 +10,7 @@ import anthropic
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, PERSONAS, ANALYTICS_DIR, CAMPAIGNS_DIR
+from pipeline import performance_memory
 
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
@@ -141,8 +142,8 @@ def save_analytics(campaign_id: str, blog_title: str, metrics: dict, summary: st
     print(f"[analytics] Saved → {out}")
 
 
-def run(campaign_id: str, blog: dict, newsletter_ids: dict[str, str]) -> dict:
-    """Simulate engagement, generate AI summary, persist, return full analytics record."""
+def run(campaign_id: str, blog: dict, newsletter_ids: dict[str, str], newsletters: dict = None) -> dict:
+    """Simulate engagement, generate AI summary, update feedback loop, persist."""
     print("[analytics] Simulating engagement metrics...")
     metrics = simulate_engagement(newsletter_ids)
     for p, m in metrics.items():
@@ -154,6 +155,10 @@ def run(campaign_id: str, blog: dict, newsletter_ids: dict[str, str]) -> dict:
     print(f"\n{'='*60}\nPERFORMANCE SUMMARY\n{'='*60}\n{summary}\n{'='*60}\n")
 
     save_analytics(campaign_id, blog["title"], metrics, summary)
+
+    # Update feedback loop so the next generation cycle learns from this campaign
+    if newsletters:
+        performance_memory.update(blog, newsletters, metrics)
 
     print("[analytics] Suggesting next blog topics...")
     next_topics = suggest_next_topics(load_historical())
