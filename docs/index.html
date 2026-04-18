@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaMind — AI Marketing Content Pipeline</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark: #6d28d9;
+      --bg: #0f0f11;
+      --card: #1a1a2e;
+      --border: #2d2d4e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(15,15,17,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+    nav .logo { font-weight: 800; font-size: 1.1rem; background: linear-gradient(135deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.88rem; margin-left: 28px; transition: color 0.2s; }
+    nav a:hover { color: var(--text); }
+    nav .cta { background: var(--purple); color: white !important; padding: 8px 18px; border-radius: 8px; font-weight: 600; }
+    nav .cta:hover { background: var(--purple-dark); }
+
+    /* HERO */
+    .hero { max-width: 860px; margin: 0 auto; padding: 100px 24px 80px; text-align: center; }
+    .hero .badge { display: inline-block; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.4); color: var(--purple-light); padding: 6px 16px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 24px; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 20px; }
+    .hero h1 span { background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 1.15rem; color: var(--muted); max-width: 600px; margin: 0 auto 36px; }
+    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 13px 28px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; }
+    .btn-primary { background: var(--purple); color: white; }
+    .btn-primary:hover { background: var(--purple-dark); transform: translateY(-1px); }
+    .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--purple); }
+
+    /* FLOW */
+    section { max-width: 1000px; margin: 0 auto; padding: 80px 24px; }
+    .section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple-light); font-weight: 700; margin-bottom: 12px; }
+    .section-title { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -0.5px; margin-bottom: 16px; }
+    .section-sub { color: var(--muted); font-size: 1rem; max-width: 560px; margin-bottom: 48px; }
+
+    .steps { display: grid; gap: 0; }
+    .step { display: grid; grid-template-columns: 56px 1fr; gap: 20px; padding: 28px 0; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-num { width: 44px; height: 44px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: var(--purple-light); flex-shrink: 0; margin-top: 2px; }
+    .step-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; }
+    .step-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .step-output { display: inline-block; margin-top: 10px; background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.25); color: var(--purple-light); padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+
+    /* OUTPUTS */
+    .outputs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .output-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+    .output-icon { font-size: 1.6rem; margin-bottom: 14px; }
+    .output-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+    .output-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+
+    /* DIFFERENTIATORS */
+    .diff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .diff-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; }
+    .diff-card:hover { border-color: var(--purple); }
+    .diff-num { font-size: 2rem; font-weight: 900; color: rgba(124,58,237,0.3); margin-bottom: 12px; line-height: 1; }
+    .diff-title { font-weight: 700; font-size: 1rem; margin-bottom: 8px; color: var(--purple-light); }
+    .diff-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+
+    /* TECH */
+    .tech-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tech-pill { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 0.82rem; color: var(--muted); }
+    .tech-pill strong { color: var(--text); }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 40px 24px; text-align: center; color: var(--muted); font-size: 0.82rem; }
+    footer a { color: var(--purple-light); text-decoration: none; }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">NovaMind Pipeline</span>
+  <div>
+    <a href="#how-it-works">How it works</a>
+    <a href="#outputs">What you get</a>
+    <a href="#different">What's different</a>
+    <a href="https://github.com/MayankSewatkar/novamind-pipeline" target="_blank" class="cta">View on GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">AI · Content · Automation</div>
+  <h1>Your marketing team,<br><span>on autopilot.</span></h1>
+  <p>Type a topic. Get a publish-ready blog post, three audience-targeted newsletters, a performance report, and ideas for what to write next — all in minutes.</p>
+  <div class="hero-btns">
+    <a href="https://github.com/MayankSewatkar/novamind-pipeline" target="_blank" class="btn btn-primary">View on GitHub</a>
+    <a href="#how-it-works" class="btn btn-secondary">See how it works</a>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="section-label">The pipeline</div>
+  <h2 class="section-title">From topic to sent campaign in six steps</h2>
+  <p class="section-sub">You provide a topic. The system handles everything else — writing, segmenting, reviewing, sending, and learning.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">You type a topic</div>
+        <div class="step-desc">Something like <em>"AI tools every creative agency should use in 2026."</em> That's the only input required. No briefing docs, no templates to fill out.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">AI writes the blog post</div>
+        <div class="step-desc">Claude (Anthropic's AI model) drafts a 400–600 word article with a compelling headline, clear structure, and an SEO meta description. It already knows what topics and angles have performed well from previous campaigns.</div>
+        <span class="step-output">→ Publish-ready blog draft</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">AI writes three different newsletter versions</div>
+        <div class="step-desc">The same blog becomes three separate emails — one for agency owners (ROI-focused, executive tone), one for freelance creatives (casual, practical), and one for marketing managers (data-forward, team-oriented). Each has a tailored subject line, preview text, and call to action.</div>
+        <span class="step-output">→ 3 audience-targeted emails</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">You review and approve</div>
+        <div class="step-desc">The draft lands in the dashboard marked <strong>Pending Approval</strong>. You read the blog and the three newsletters. If they look good, you click <strong>Approve &amp; Send</strong>. Nothing goes out without a human sign-off.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">Emails are sent to the right audience</div>
+        <div class="step-desc">Each newsletter version is delivered to its matching audience segment via the Resend email platform. Agency owners get the agency owner version. Freelancers get theirs. Contacts are tracked in HubSpot.</div>
+        <span class="step-output">→ Campaign sent &amp; logged</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div>
+        <div class="step-title">AI reports on performance and suggests what's next</div>
+        <div class="step-desc">After sending, the system generates a plain-English performance summary: which audience opened and clicked most, any warning signs, and 2–3 specific things to do differently next time. It also suggests three topics for your next campaign, informed by what has worked historically.</div>
+        <span class="step-output">→ AI performance report + next topic ideas</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- OUTPUTS -->
+<section id="outputs">
+  <div class="section-label">Deliverables</div>
+  <h2 class="section-title">What you get from every campaign</h2>
+  <p class="section-sub">One topic input produces five concrete outputs, automatically.</p>
+
+  <div class="outputs-grid">
+    <div class="output-card">
+      <div class="output-icon">📝</div>
+      <div class="output-title">Blog post draft</div>
+      <div class="output-desc">400–600 words, structured with headings, SEO-optimized title and meta description, ready to paste into your CMS.</div>
+    </div>
+    <div class="output-card">
+      <div class="output-icon">✉️</div>
+      <div class="output-title">3 newsletter emails</div>
+      <div class="output-desc">One per audience persona — agency owners, freelancers, and marketing managers — each with a unique subject line, tone, and call to action.</div>
+    </div>
+    <div class="output-card">
+      <div class="output-icon">📊</div>
+      <div class="output-title">Engagement report</div>
+      <div class="output-desc">Open rates, click rates, and unsubscribe rates broken down by audience segment, with historical trend comparisons.</div>
+    </div>
+    <div class="output-card">
+      <div class="output-icon">🤖</div>
+      <div class="output-title">AI performance summary</div>
+      <div class="output-desc">A written analysis of what worked, what didn't, and 2–3 concrete recommendations for the next campaign.</div>
+    </div>
+    <div class="output-card">
+      <div class="output-icon">💡</div>
+      <div class="output-title">Next topic suggestions</div>
+      <div class="output-desc">Three data-informed blog topic ideas for your next campaign, generated based on what has driven the most engagement so far.</div>
+    </div>
+    <div class="output-card">
+      <div class="output-icon">🗂️</div>
+      <div class="output-title">CRM campaign log</div>
+      <div class="output-desc">Every campaign is logged in HubSpot with audience tagging, send date, and email IDs for future reference and follow-up.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- WHAT'S DIFFERENT -->
+<section id="different">
+  <div class="section-label">Design decisions</div>
+  <h2 class="section-title">Three things that make this different</h2>
+  <p class="section-sub">Most AI content tools generate and forget. This one is built to learn and improve with every send.</p>
+
+  <div class="diff-grid">
+    <div class="diff-card">
+      <div class="diff-num">01</div>
+      <div class="diff-title">Emails actually send</div>
+      <div class="diff-desc">Most demos simulate email delivery. This pipeline connects to Resend and delivers real HTML emails to real inboxes — free tier, no credit card required. You see actual delivery confirmations, not mock logs.</div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-num">02</div>
+      <div class="diff-title">It learns from every campaign</div>
+      <div class="diff-desc">After each send, the system records which subject lines, topics, and calls-to-action drove the highest click rates. The next time it writes a newsletter, those winning patterns are already baked into its instructions.</div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-num">03</div>
+      <div class="diff-title">Humans stay in control</div>
+      <div class="diff-desc">Content is drafted and saved first. A human reviews it in the dashboard, then clicks Approve & Send. Nothing reaches a real inbox without explicit sign-off — the system assists, it doesn't replace judgment.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- TECH STACK -->
+<section>
+  <div class="section-label">Under the hood</div>
+  <h2 class="section-title">Built with</h2>
+  <p class="section-sub" style="margin-bottom: 28px;">Production-grade tools, all with free tiers for testing.</p>
+  <div class="tech-row">
+    <div class="tech-pill"><strong>Claude (Anthropic)</strong> — AI writing</div>
+    <div class="tech-pill"><strong>HubSpot</strong> — CRM &amp; contact management</div>
+    <div class="tech-pill"><strong>Resend</strong> — Email delivery</div>
+    <div class="tech-pill"><strong>FastAPI</strong> — Web dashboard</div>
+    <div class="tech-pill"><strong>Python 3.11+</strong></div>
+  </div>
+</section>
+
+<footer>
+  Built by <a href="https://github.com/MayankSewatkar" target="_blank">Mayank Sewatkar</a> ·
+  <a href="https://github.com/MayankSewatkar/novamind-pipeline" target="_blank">GitHub</a>
+</footer>
+
+</body>
+</html>
