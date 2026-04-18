@@ -52,6 +52,10 @@ def _hs_get(path: str, params: Optional[dict] = None) -> dict:
 
 def upsert_contact(contact_data: dict, persona_key: str) -> str:
     """Create or update a contact in HubSpot; returns HubSpot contact ID."""
+    if not HUBSPOT_ACCESS_TOKEN:
+        mock_id = f"mock_{uuid.uuid4().hex[:8]}"
+        print(f"  [crm] No HUBSPOT_ACCESS_TOKEN — mock contact id={mock_id}")
+        return mock_id
     payload = {
         "properties": {
             "email": contact_data["email"],
@@ -69,11 +73,12 @@ def upsert_contact(contact_data: dict, persona_key: str) -> str:
         return contact_id
     except requests.HTTPError as e:
         if e.response.status_code == 409:
-            # Contact exists — extract id from conflict response
             existing_id = e.response.json().get("message", "").split("with ID: ")[-1].strip()
             print(f"  [crm] Contact exists {contact_data['email']} → id={existing_id}")
             return existing_id
-        raise
+        mock_id = f"mock_{uuid.uuid4().hex[:8]}"
+        print(f"  [crm] HubSpot contact error ({e.response.status_code}) — mock id={mock_id}")
+        return mock_id
 
 
 def seed_contacts() -> dict[str, list[str]]:

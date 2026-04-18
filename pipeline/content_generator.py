@@ -26,6 +26,26 @@ def _call_claude(system: str, user: str, max_tokens: int = 2048) -> str:
     return response.content[0].text
 
 
+def _parse_json(raw: str) -> dict:
+    """Strip fences and parse JSON; fall back to json_repair-style extraction."""
+    raw = re.sub(r"^```(?:json)?\s*", "", raw.strip())
+    raw = re.sub(r"\s*```$", "", raw.strip())
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        # Find the outermost {...} block and try again
+        m = re.search(r"\{.*\}", raw, re.DOTALL)
+        if m:
+            try:
+                return json.loads(m.group())
+            except json.JSONDecodeError:
+                pass
+        # Last resort: ask Claude to re-serialize via ast.literal_eval isn't valid for JSON;
+        # instead, replace literal newlines inside string values with \n
+        fixed = re.sub(r'(?<=[^\\])\n', r'\\n', raw)
+        return json.loads(fixed)
+
+
 def generate_blog(topic: str) -> dict:
     """Generate a blog outline + ~400-600 word draft on a given topic."""
     memory_context = performance_memory.as_prompt_context()
@@ -50,10 +70,7 @@ Return valid JSON with exactly this structure:
 }}"""
 
     raw = _call_claude(system, user, max_tokens=2048)
-    # Strip markdown code fences if present
-    raw = re.sub(r"^```(?:json)?\s*", "", raw.strip())
-    raw = re.sub(r"\s*```$", "", raw.strip())
-    data = json.loads(raw)
+    data = _parse_json(raw)
     data["topic"] = topic
     data["generated_at"] = datetime.utcnow().isoformat()
     return data
@@ -92,9 +109,7 @@ Return valid JSON with exactly this structure:
 }}"""
 
         raw = _call_claude(system, user, max_tokens=1024)
-        raw = re.sub(r"^```(?:json)?\s*", "", raw.strip())
-        raw = re.sub(r"\s*```$", "", raw.strip())
-        newsletters[persona_key] = json.loads(raw)
+        newsletters[persona_key] = _parse_json(raw)
 
     return newsletters
 
