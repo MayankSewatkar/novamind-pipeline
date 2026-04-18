@@ -42,9 +42,9 @@ async def index(request: Request):
     sent = [c for c in campaigns if c.get("status") == "SENT"]
 
     return templates.TemplateResponse(
+        request,
         "index.html",
         {
-            "request": request,
             "pending": pending,
             "sent": sent,
             "total": len(campaigns),
@@ -74,9 +74,9 @@ async def campaign_detail(request: Request, campaign_id: str):
         analytics_record = json.loads(a_path.read_text())
 
     return templates.TemplateResponse(
+        request,
         "campaign.html",
         {
-            "request": request,
             "campaign_id": campaign_id,
             "campaign_meta": campaign_meta,
             "blog": blog,

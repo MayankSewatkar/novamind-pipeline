@@ -1,6 +1,17 @@
 # NovaMind — AI-Powered Marketing Content Pipeline
 
-An end-to-end, mostly hands-free content automation system for NovaMind, a fictional AI startup serving small creative agencies. Give it a topic and it produces a blog post, three persona-targeted newsletters, distributes them via HubSpot, and generates an AI-powered performance report.
+## What This Does (Plain English)
+
+You type in a topic — say, *"AI tools for creative agencies"* — and the system does the rest automatically:
+
+1. **Writes a blog post** — a fully drafted 400–600 word article with a headline, structure, and SEO description, ready to publish.
+2. **Writes three different newsletter emails** — one for each audience type (agency owners, freelance creatives, and marketing managers), each with its own tone, angle, and subject line tailored to what that reader actually cares about.
+3. **Holds for your approval** — nothing goes out until a human reviews and clicks "Approve & Send" in the web dashboard. You stay in control.
+4. **Sends the emails** — delivers each version to the right audience segment.
+5. **Reports on what worked** — after sending, it produces an AI-written performance summary: which audience opened and clicked the most, which showed warning signs, and exactly what to do differently next time.
+6. **Gets smarter over time** — every campaign teaches the system what subject lines, topics, and calls-to-action drive the best results. The next blog it writes already knows what worked last time.
+
+**What you get out of it:** a publish-ready blog post, three audience-specific newsletters, a campaign performance report, and three suggested topics for your next campaign — all from a single topic input, in minutes.
 
 ---
 

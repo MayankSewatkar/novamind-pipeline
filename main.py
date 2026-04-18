@@ -101,9 +101,8 @@ Legacy (auto-approve, skips review):
 
     if args.serve:
         import uvicorn
-        from dashboard.app import app
         print("Starting NovaMind dashboard at http://localhost:8000")
-        uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+        uvicorn.run("dashboard.app:app", host="0.0.0.0", port=8000, reload=True)
         return
 
     if args.generate:
