@@ -3,62 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovaMind — {{ campaign_id }}</title>
+  <title>NovaMind — {{ blog.title if blog else campaign_id }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f0f11; color: #e2e8f0; min-height: 100vh; }
-    .topbar { background: linear-gradient(135deg, #6c3de8 0%, #a855f7 100%); padding: 20px 32px; display: flex; align-items: center; gap: 20px; }
-    .topbar a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.85rem; }
-    .topbar a:hover { color: white; }
-    .topbar h1 { font-size: 1.1rem; font-weight: 700; flex: 1; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; display: grid; gap: 24px; }
-    .card { background: #1a1a2e; border: 1px solid #2d2d4e; border-radius: 12px; padding: 24px; }
-    .card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #7c3aed; margin-bottom: 16px; font-weight: 600; }
-    .blog-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
-    .meta { font-size: 0.8rem; color: #64748b; margin-bottom: 16px; }
-    .blog-body { font-size: 0.9rem; line-height: 1.7; white-space: pre-wrap; color: #cbd5e1; }
-    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-    .tag { background: #1e1e3f; color: #a78bfa; padding: 3px 10px; border-radius: 999px; font-size: 0.73rem; }
+
+    :root {
+      --bg:      #F4F5F7;
+      --surface: #FFFFFF;
+      --border:  #E5E7EB;
+      --text:    #111827;
+      --muted:   #6B7280;
+      --accent:  #6366F1;
+      --green:   #10B981;
+      --yellow:  #F59E0B;
+      --blue:    #3B82F6;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
+      background: var(--surface); border-right: 1px solid var(--border);
+      padding: 28px 0; display: flex; flex-direction: column;
+    }
+    .sidebar-logo { padding: 0 24px 24px; font-size: 1rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--border); margin-bottom: 20px; line-height: 1.3; }
+    .sidebar-logo span { display: block; font-size: 0.68rem; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 0.875rem; font-weight: 500; color: var(--muted); cursor: pointer; text-decoration: none; transition: all 0.15s; }
+    .nav-item:hover { background: var(--bg); color: var(--text); }
+    .nav-item.active { background: #EEF2FF; color: var(--accent); border-right: 3px solid var(--accent); }
+    .nav-icon { font-size: 1rem; width: 20px; }
+
+    /* ── Main ── */
+    .main { margin-left: 220px; padding: 32px 36px; min-height: 100vh; }
+
+    /* ── Page Header ── */
+    .page-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px; padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      text-decoration: none; color: var(--muted); font-size: 0.85rem; font-weight: 500;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 14px; transition: all 0.15s; white-space: nowrap;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--text); }
+    .page-header h1 { font-size: 1.15rem; font-weight: 700; flex: 1; }
+
+    .btn-approve { background: var(--green); color: white; border: none; border-radius: 10px; padding: 10px 20px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+    .btn-approve:hover { opacity: 0.85; }
+    .sent-pill { background: #DBEAFE; color: var(--blue); padding: 6px 16px; border-radius: 50px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+
+    /* ── Cards ── */
+    .content-stack { display: grid; gap: 24px; }
+    .card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 28px; }
+    .card-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); margin-bottom: 16px; }
+
+    /* Blog */
+    .blog-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+    .blog-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 18px; }
+    .blog-body { font-size: 0.9rem; line-height: 1.75; color: #374151; white-space: pre-wrap; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .tag { background: #EEF2FF; color: var(--accent); padding: 4px 12px; border-radius: 50px; font-size: 0.73rem; font-weight: 500; }
+
+    /* Personas */
     .personas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-    .persona-card { background: #12122b; border: 1px solid #2d2d4e; border-radius: 10px; padding: 18px; }
-    .persona-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; color: #a78bfa; }
-    .persona-subject { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
-    .persona-preview { font-size: 0.75rem; color: #94a3b8; margin-bottom: 12px; }
-    .persona-body { font-size: 0.8rem; line-height: 1.6; color: #cbd5e1; white-space: pre-wrap; }
+    .persona-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .persona-name { font-weight: 700; font-size: 0.875rem; color: var(--accent); margin-bottom: 6px; }
+    .persona-subject { font-size: 0.875rem; font-weight: 600; margin-bottom: 4px; }
+    .persona-preview { font-size: 0.78rem; color: var(--muted); margin-bottom: 14px; font-style: italic; }
+    .persona-body { font-size: 0.8rem; line-height: 1.65; color: #374151; white-space: pre-wrap; }
+
+    /* Metrics */
     .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-    .metric-card { background: #12122b; border: 1px solid #2d2d4e; border-radius: 10px; padding: 18px; }
-    .metric-persona { font-size: 0.75rem; color: #7c3aed; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1e1e3f; font-size: 0.82rem; }
+    .metric-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .metric-persona { font-size: 0.72rem; color: var(--accent); font-weight: 600; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
     .metric-row:last-child { border-bottom: none; }
-    .metric-val { font-weight: 700; color: #a78bfa; }
-    .summary-text { font-size: 0.9rem; line-height: 1.7; color: #cbd5e1; white-space: pre-wrap; }
+    .metric-val { font-weight: 700; color: var(--accent); }
+
+    /* Summary */
+    .summary-text { font-size: 0.9rem; line-height: 1.75; color: #374151; white-space: pre-wrap; }
+
+    /* Next topics */
     .next-topics { list-style: none; display: grid; gap: 10px; }
-    .next-topics li { background: #12122b; border: 1px solid #2d2d4e; border-radius: 8px; padding: 12px 16px; font-size: 0.88rem; cursor: pointer; transition: border-color 0.2s; }
-    .next-topics li:hover { border-color: #7c3aed; }
-    .next-topics li::before { content: "→ "; color: #7c3aed; font-weight: 700; }
+    .next-topics li { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-size: 0.875rem; cursor: pointer; transition: border-color 0.2s; }
+    .next-topics li:hover { border-color: var(--accent); }
+    .next-topics li::before { content: "→ "; color: var(--accent); font-weight: 700; }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <a href="/">← Dashboard</a>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">📦 NovaMind<span>Content Pipeline</span></div>
+  <a class="nav-item active" href="/"><span class="nav-icon">📊</span> Dashboard</a>
+  <a class="nav-item" href="#"><span class="nav-icon">📝</span> Campaigns</a>
+  <a class="nav-item" href="#"><span class="nav-icon">📈</span> Analytics</a>
+  <a class="nav-item" href="#"><span class="nav-icon">👥</span> Personas</a>
+  <a class="nav-item" href="#"><span class="nav-icon">⚙️</span> Settings</a>
+</aside>
+
+<main class="main">
+
+  <div class="page-header">
+    <a class="back-btn" href="/">← Dashboard</a>
     <h1>{{ blog.title if blog else campaign_id }}</h1>
     {% if campaign_meta and campaign_meta.status == 'PENDING_APPROVAL' %}
     <form action="/approve/{{ campaign_id }}" method="post" style="margin-left:auto">
-      <button type="submit" style="background:#059669;color:white;border:none;border-radius:8px;padding:10px 20px;font-weight:600;cursor:pointer;font-size:0.9rem;">
-        Approve &amp; Send
-      </button>
+      <button type="submit" class="btn-approve">Approve &amp; Send</button>
     </form>
     {% elif campaign_meta %}
-    <span style="margin-left:auto;background:rgba(255,255,255,0.15);padding:6px 14px;border-radius:999px;font-size:0.78rem;font-weight:600;">SENT</span>
+    <span class="sent-pill" style="margin-left:auto">SENT</span>
     {% endif %}
   </div>
-  <div class="container">
+
+  <div class="content-stack">
 
     {% if blog %}
     <div class="card">
-      <div class="card-title">Blog Post</div>
+      <div class="card-label">Blog Post</div>
       <div class="blog-title">{{ blog.title }}</div>
-      <div class="meta">{{ blog.generated_at[:10] }} · {{ blog.topic }}</div>
+      <div class="blog-meta">{{ blog.generated_at[:10] }} · {{ blog.topic }}</div>
       <div class="blog-body">{{ blog.draft }}</div>
       {% if blog.tags %}
       <div class="tags">{% for t in blog.tags %}<span class="tag">{{ t }}</span>{% endfor %}</div>
@@ -68,7 +136,7 @@
 
     {% if newsletters %}
     <div class="card">
-      <div class="card-title">Persona Newsletters</div>
+      <div class="card-label">Persona Newsletters</div>
       <div class="personas-grid">
         {% for persona_key, nl in newsletters.items() %}
         <div class="persona-card">
@@ -84,7 +152,7 @@
 
     {% if analytics %}
     <div class="card">
-      <div class="card-title">Engagement Metrics</div>
+      <div class="card-label">Engagement Metrics</div>
       <div class="metrics-grid">
         {% for persona_key, m in analytics.metrics.items() %}
         <div class="metric-card">
@@ -99,11 +167,12 @@
     </div>
 
     <div class="card">
-      <div class="card-title">AI Performance Summary</div>
+      <div class="card-label">AI Performance Summary</div>
       <div class="summary-text">{{ analytics.ai_summary }}</div>
     </div>
     {% endif %}
 
   </div>
+</main>
 </body>
 </html>
