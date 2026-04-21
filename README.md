@@ -1,5 +1,7 @@
 # NovaMind — AI-Powered Marketing Content Pipeline
 
+**Live site:** https://mayanksewatkar.github.io/novamind-pipeline/
+
 ## What This Does (Plain English)
 
 You type in a topic — say, *"AI tools for creative agencies"* — and the system does the rest automatically:
