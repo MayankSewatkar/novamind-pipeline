@@ -1,257 +1,1443 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovaMind — AI Marketing Content Pipeline</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --purple: #7c3aed;
-      --purple-light: #a78bfa;
-      --purple-dark: #6d28d9;
-      --bg: #0f0f11;
-      --card: #1a1a2e;
-      --border: #2d2d4e;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-    }
-    html { scroll-behavior: smooth; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NovaMind — AI Content Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* NAV */
-    nav { position: sticky; top: 0; z-index: 100; background: rgba(15,15,17,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
-    nav .logo { font-weight: 800; font-size: 1.1rem; background: linear-gradient(135deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    nav a { color: var(--muted); text-decoration: none; font-size: 0.88rem; margin-left: 28px; transition: color 0.2s; }
-    nav a:hover { color: var(--text); }
-    nav .cta { background: var(--purple); color: white !important; padding: 8px 18px; border-radius: 8px; font-weight: 600; }
-    nav .cta:hover { background: var(--purple-dark); }
+  :root {
+    --bg: #faf6ec;
+    --bg-warm: #f5efdd;
+    --bg-card: #ffffff;
+    --bg-soft: #fffbee;
+    --ink: #1a1510;
+    --ink-soft: #4a4438;
+    --ink-mute: #8a8172;
+    --ink-faint: #b8ad97;
+    --line: #e8dfc6;
+    --line-soft: #f0e8d1;
+    --honey: #e8b838;
+    --honey-deep: #c49420;
+    --honey-dark: #8a6810;
+    --honey-glow: #fde9a8;
+    --sun: #f5d547;
+    --cream: #fff7d6;
+    --moss: #5a6f3a;
+    --clay: #b8553a;
+    --ink-paper: #ede4c9;
+    --radius: 6px;
+    --radius-md: 10px;
+    --radius-lg: 18px;
+    --font-display: 'Fraunces', serif;
+    --font-editorial: 'Instrument Serif', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
 
-    /* HERO */
-    .hero { max-width: 860px; margin: 0 auto; padding: 100px 24px 80px; text-align: center; }
-    .hero .badge { display: inline-block; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.4); color: var(--purple-light); padding: 6px 16px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 24px; }
-    .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 20px; }
-    .hero h1 span { background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { font-size: 1.15rem; color: var(--muted); max-width: 600px; margin: 0 auto 36px; }
-    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    .btn { display: inline-block; padding: 13px 28px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; }
-    .btn-primary { background: var(--purple); color: white; }
-    .btn-primary:hover { background: var(--purple-dark); transform: translateY(-1px); }
-    .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover { border-color: var(--purple); }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(245, 213, 71, 0.08), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(232, 184, 56, 0.06), transparent 45%);
+  }
+  ::selection { background: var(--honey); color: var(--ink); }
 
-    /* FLOW */
-    section { max-width: 1000px; margin: 0 auto; padding: 80px 24px; }
-    .section-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple-light); font-weight: 700; margin-bottom: 12px; }
-    .section-title { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -0.5px; margin-bottom: 16px; }
-    .section-sub { color: var(--muted); font-size: 1rem; max-width: 560px; margin-bottom: 48px; }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem; height: 64px;
+    background: rgba(250, 246, 236, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-logo {
+    display: flex; align-items: baseline; gap: 10px;
+    font-family: var(--font-display);
+    font-size: 1.45rem; font-weight: 500;
+    letter-spacing: -0.02em;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .logo-mark {
+    display: inline-block;
+    width: 14px; height: 14px;
+    background: var(--honey);
+    border-radius: 50%;
+    position: relative;
+    transform: translateY(1px);
+  }
+  .logo-mark::after {
+    content: '';
+    position: absolute; inset: -4px;
+    border: 1px solid var(--honey);
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: ring 3s ease-in-out infinite;
+  }
+  @keyframes ring { 0%,100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.35); opacity: 0; } }
+  .nav-logo em { font-style: italic; font-weight: 400; color: var(--honey-dark); }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    color: var(--ink-soft); text-decoration: none;
+    font-size: 0.85rem; font-weight: 500;
+    transition: color 0.2s; position: relative;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a::after {
+    content: ''; position: absolute;
+    bottom: -4px; left: 0; right: 0;
+    height: 1px; background: var(--honey);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-cta {
+    background: var(--ink); color: var(--bg);
+    border: none; border-radius: 100px;
+    padding: 0.5rem 1.2rem;
+    font-family: var(--font-body);
+    font-size: 0.82rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .nav-cta:hover { background: var(--honey-dark); }
 
-    .steps { display: grid; gap: 0; }
-    .step { display: grid; grid-template-columns: 56px 1fr; gap: 20px; padding: 28px 0; border-bottom: 1px solid var(--border); }
-    .step:last-child { border-bottom: none; }
-    .step-num { width: 44px; height: 44px; border-radius: 12px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; color: var(--purple-light); flex-shrink: 0; margin-top: 2px; }
-    .step-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; }
-    .step-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
-    .step-output { display: inline-block; margin-top: 10px; background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.25); color: var(--purple-light); padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+  .hero {
+    position: relative; padding: 6rem 2.5rem 5rem;
+    max-width: 1200px; margin: 0 auto;
+    overflow: hidden;
+  }
+  .hero-inner {
+    display: grid; grid-template-columns: 1.3fr 1fr;
+    gap: 4rem; align-items: center;
+    position: relative; z-index: 2;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 1.8rem;
+  }
+  .eyebrow-line { display: inline-block; width: 24px; height: 1px; background: var(--honey-deep); }
 
-    /* OUTPUTS */
-    .outputs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-    .output-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
-    .output-icon { font-size: 1.6rem; margin-bottom: 14px; }
-    .output-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
-    .output-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 5.5vw, 4.8rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 400;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em {
+    font-family: var(--font-editorial);
+    font-style: italic; font-weight: 400;
+    color: var(--honey-dark); letter-spacing: -0.02em;
+  }
+  .hero h1 .stroke { position: relative; display: inline-block; }
+  .hero h1 .stroke::before {
+    content: ''; position: absolute;
+    left: -6px; right: -6px; bottom: 4px;
+    height: 40%; background: var(--honey-glow);
+    z-index: -1; border-radius: 4px;
+  }
 
-    /* DIFFERENTIATORS */
-    .diff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-    .diff-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; }
-    .diff-card:hover { border-color: var(--purple); }
-    .diff-num { font-size: 2rem; font-weight: 900; color: rgba(124,58,237,0.3); margin-bottom: 12px; line-height: 1; }
-    .diff-title { font-weight: 700; font-size: 1rem; margin-bottom: 8px; color: var(--purple-light); }
-    .diff-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+  .hero-sub {
+    color: var(--ink-soft);
+    font-size: 1.08rem;
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    line-height: 1.65;
+  }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--ink); color: var(--bg);
+    border: none; border-radius: 100px;
+    padding: 0.85rem 1.8rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .btn-primary:hover { background: var(--honey-dark); transform: translateY(-2px); }
+  .btn-primary .arrow { transition: transform 0.2s; }
+  .btn-primary:hover .arrow { transform: translateX(3px); }
+  .btn-secondary {
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 100px;
+    padding: 0.85rem 1.8rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: var(--ink); color: var(--bg); }
 
-    /* TECH */
-    .tech-row { display: flex; flex-wrap: wrap; gap: 10px; }
-    .tech-pill { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 0.82rem; color: var(--muted); }
-    .tech-pill strong { color: var(--text); }
+  .hero-visual {
+    position: relative; height: 340px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sun-disc {
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--sun) 0%, var(--honey) 55%, var(--honey-deep) 100%);
+    position: relative;
+    box-shadow: 0 20px 60px rgba(232, 184, 56, 0.3), inset -20px -20px 60px rgba(0,0,0,0.08);
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .sun-rays {
+    position: absolute; inset: -40px;
+    animation: rotate 40s linear infinite;
+  }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+  .sun-rays::before, .sun-rays::after {
+    content: ''; position: absolute; inset: 0;
+    border: 1px dashed var(--honey-deep);
+    border-radius: 50%; opacity: 0.3;
+  }
+  .sun-rays::after { inset: -20px; border-style: solid; opacity: 0.15; }
 
-    /* FOOTER */
-    footer { border-top: 1px solid var(--border); padding: 40px 24px; text-align: center; color: var(--muted); font-size: 0.82rem; }
-    footer a { color: var(--purple-light); text-decoration: none; }
+  .orbit-card {
+    position: absolute;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-size: 0.78rem;
+    box-shadow: 0 10px 30px rgba(138, 104, 16, 0.1);
+    font-family: var(--font-mono);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .orbit-card .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .orbit-1 { top: 10%; left: -8%; animation: float 5s ease-in-out infinite; }
+  .orbit-2 { bottom: 20%; right: -12%; animation: float 5s ease-in-out 1.5s infinite; }
+  .orbit-3 { top: 50%; left: -15%; animation: float 5s ease-in-out 2.8s infinite; }
 
-    /* DIVIDER */
-    .divider { border: none; border-top: 1px solid var(--border); }
-  </style>
+  .hero-meta {
+    margin-top: 4.5rem; padding-top: 2rem;
+    border-top: 1px solid var(--line);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+    position: relative; z-index: 2;
+  }
+  .meta-item { position: relative; }
+  .meta-item:not(:last-child)::after {
+    content: ''; position: absolute;
+    right: -1rem; top: 10%; bottom: 10%;
+    width: 1px; background: var(--line);
+  }
+  .meta-num {
+    font-family: var(--font-display);
+    font-size: 2.2rem; font-weight: 500;
+    line-height: 1; letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .meta-num em { font-family: var(--font-editorial); font-style: italic; color: var(--honey-dark); }
+  .meta-label {
+    color: var(--ink-mute);
+    font-size: 0.78rem; margin-top: 0.5rem;
+    font-family: var(--font-mono); letter-spacing: 0.04em;
+  }
+
+  .section { padding: 5rem 2.5rem; max-width: 1200px; margin: 0 auto; position: relative; }
+  .section-head { margin-bottom: 3.5rem; max-width: 680px; }
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--honey-dark);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-tag-num {
+    display: inline-block;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 2px 8px; border-radius: 4px;
+    color: var(--honey-dark);
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    letter-spacing: -0.025em; line-height: 1.1;
+    font-weight: 400;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+  }
+  .section-title em { font-family: var(--font-editorial); font-style: italic; color: var(--honey-dark); }
+  .section-desc {
+    color: var(--ink-soft); margin-top: 1rem;
+    font-size: 1rem; line-height: 1.7;
+    max-width: 560px;
+  }
+
+  .pipeline-strip {
+    background: var(--bg-warm);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 3rem 2.5rem;
+  }
+  .pipeline-flow {
+    max-width: 1100px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 30px 1fr 30px 1fr 30px 1fr;
+    align-items: center; gap: 0;
+  }
+  .pipe-step {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 1.2rem 1rem; text-align: center;
+    position: relative; transition: all 0.3s;
+    cursor: pointer;
+  }
+  .pipe-step:hover {
+    border-color: var(--honey-deep);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(138, 104, 16, 0.08);
+  }
+  .pipe-step.active { background: var(--cream); border-color: var(--honey); }
+  .pipe-num {
+    position: absolute; top: -10px; left: 12px;
+    background: var(--bg-warm); padding: 0 6px;
+    font-family: var(--font-mono); font-size: 0.68rem;
+    color: var(--ink-mute); letter-spacing: 0.1em;
+  }
+  .pipe-icon {
+    width: 42px; height: 42px; border-radius: 50%;
+    margin: 0 auto 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    background: var(--bg-warm);
+    border: 1px solid var(--line);
+  }
+  .pipe-icon.active-icon { background: var(--honey-glow); border-color: var(--honey); }
+  .pipe-label { font-size: 0.88rem; font-weight: 600; margin-bottom: 2px; color: var(--ink); }
+  .pipe-sub { font-size: 0.72rem; color: var(--ink-mute); font-family: var(--font-mono); }
+  .pipe-arrow { text-align: center; color: var(--ink-faint); font-size: 1rem; font-family: var(--font-mono); }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    transition: box-shadow 0.3s;
+  }
+  .card:hover { box-shadow: 0 20px 40px rgba(138, 104, 16, 0.06); }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem; font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .card-title-mono {
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--ink-mute); letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 2px;
+  }
+
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem; border-radius: 100px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .badge-honey { background: var(--cream); color: var(--honey-dark); border: 1px solid var(--honey-glow); }
+  .badge-honey::before { background: var(--honey); }
+  .badge-moss { background: #eaf0de; color: var(--moss); border: 1px solid #d6dfc4; }
+  .badge-moss::before { background: var(--moss); }
+  .badge-clay { background: #f7e8e2; color: var(--clay); border: 1px solid #ead3c8; }
+  .badge-clay::before { background: var(--clay); }
+  .badge-ink { background: var(--ink-paper); color: var(--ink); border: 1px solid var(--line); }
+  .badge-ink::before { background: var(--ink); }
+
+  .form-group { margin-bottom: 1.3rem; }
+  label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem; font-weight: 500;
+    color: var(--ink-mute);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  input[type=text], textarea, select {
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    padding: 0.7rem 0.95rem;
+    outline: none; transition: all 0.2s;
+    resize: vertical;
+  }
+  input[type=text]:focus, textarea:focus, select:focus {
+    border-color: var(--honey);
+    background: var(--bg-card);
+    box-shadow: 0 0 0 3px var(--honey-glow);
+  }
+  select { cursor: pointer; }
+
+  .personas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
+  .persona-pill {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    cursor: pointer; transition: all 0.2s;
+    text-align: left;
+  }
+  .persona-pill:hover { border-color: var(--honey-deep); background: var(--cream); }
+  .persona-pill.selected {
+    border-color: var(--honey);
+    background: var(--cream);
+    box-shadow: inset 0 0 0 1px var(--honey);
+  }
+  .persona-icon { font-size: 1.15rem; margin-bottom: 0.4rem; }
+  .persona-name { font-size: 0.82rem; font-weight: 600; color: var(--ink); }
+  .persona-desc { font-size: 0.7rem; color: var(--ink-mute); font-family: var(--font-mono); margin-top: 2px; }
+
+  .action-btn-big {
+    width: 100%;
+    background: var(--honey); color: var(--ink);
+    border: 1px solid var(--honey-deep);
+    border-radius: var(--radius); padding: 0.9rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 1.5rem;
+  }
+  .action-btn-big:hover:not(:disabled) {
+    background: var(--sun); transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(232, 184, 56, 0.3);
+  }
+  .action-btn-big:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .send-btn {
+    width: 100%;
+    background: var(--ink); color: var(--bg);
+    border: none; border-radius: var(--radius);
+    padding: 0.9rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 1rem;
+  }
+  .send-btn:hover:not(:disabled) { background: var(--honey-dark); transform: translateY(-1px); }
+  .send-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .output-tabs {
+    display: flex; gap: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: transparent; border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--ink-mute);
+    font-family: var(--font-body);
+    font-size: 0.84rem; font-weight: 500;
+    padding: 0.6rem 0.9rem;
+    cursor: pointer; transition: all 0.2s;
+    margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active {
+    color: var(--honey-dark);
+    border-bottom-color: var(--honey);
+    font-weight: 600;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .content-block {
+    background: var(--bg-soft);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.6rem;
+    font-family: var(--font-editorial);
+    font-size: 1rem; line-height: 1.75;
+    color: var(--ink);
+    white-space: pre-wrap;
+    max-height: 360px; overflow-y: auto;
+    position: relative;
+  }
+  .content-block::-webkit-scrollbar { width: 5px; }
+  .content-block::-webkit-scrollbar-track { background: transparent; }
+  .content-block::-webkit-scrollbar-thumb { background: var(--line); border-radius: 5px; }
+
+  .content-actions { display: flex; gap: 0.6rem; margin-top: 1.2rem; flex-wrap: wrap; }
+  .action-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    color: var(--ink-soft);
+    font-family: var(--font-body);
+    font-size: 0.78rem; font-weight: 500;
+    padding: 0.4rem 1rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .action-btn:hover {
+    border-color: var(--honey);
+    color: var(--honey-dark);
+    background: var(--cream);
+  }
+
+  .contacts-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .contacts-table th {
+    text-align: left; padding: 0.6rem 0.75rem;
+    color: var(--ink-mute); font-weight: 500;
+    font-size: 0.7rem; font-family: var(--font-mono);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+  }
+  .contacts-table td {
+    padding: 0.85rem 0.75rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .contacts-table tr:last-child td { border-bottom: none; }
+  .contacts-table tr:hover td { background: var(--bg-soft); }
+  .contact-name { font-weight: 500; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .dot-ok { background: var(--moss); }
+  .dot-wait { background: var(--honey); }
+  .dot-err { background: var(--clay); }
+
+  .summary-box {
+    background: var(--bg-warm);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+  .summary-box strong { color: var(--ink); font-weight: 600; }
+  .summary-box .sep { color: var(--line); margin: 0 4px; }
+
+  .analytics-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 1.3rem;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 32px; height: 2px; background: var(--honey);
+  }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem; color: var(--ink-mute);
+    font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 0.75rem;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 2.2rem; font-weight: 500;
+    line-height: 1; letter-spacing: -0.03em;
+  }
+  .stat-delta { font-size: 0.75rem; margin-top: 0.6rem; font-family: var(--font-mono); color: var(--ink-mute); }
+  .delta-up { color: var(--moss); }
+  .delta-down { color: var(--clay); }
+
+  .chart-bars {
+    display: flex; align-items: flex-end; gap: 12px;
+    height: 160px; padding: 1rem 1rem 0;
+    margin-top: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .bar-group {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    flex: 1; position: relative;
+  }
+  .bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  .bar-value {
+    position: absolute; top: -24px; left: 0; right: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.8rem; font-weight: 500;
+    color: var(--ink); opacity: 0;
+    transition: opacity 0.3s 0.6s;
+  }
+  .bar-value.visible { opacity: 1; }
+  .bar-label {
+    font-size: 0.76rem; color: var(--ink-soft);
+    font-family: var(--font-body); font-weight: 500;
+  }
+
+  .ai-summary {
+    background: var(--cream);
+    border: 1px solid var(--honey-glow);
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1.75rem;
+    margin-top: 1.5rem;
+    display: none;
+    position: relative; overflow: hidden;
+  }
+  .ai-summary::before {
+    content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+    width: 3px; background: var(--honey);
+  }
+  .ai-summary.visible { display: block; animation: fadeSlide 0.5s ease; }
+  @keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .ai-summary-header {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem; font-weight: 600;
+    color: var(--honey-dark);
+    margin-bottom: 0.85rem;
+    text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .ai-star { display: inline-block; color: var(--honey); animation: twinkle 2s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: 1; transform: scale(1) rotate(0); } 50% { opacity: 0.6; transform: scale(1.15) rotate(180deg); } }
+  .ai-summary p { font-family: var(--font-editorial); font-size: 1.05rem; color: var(--ink); line-height: 1.7; }
+
+  .loader {
+    display: none; align-items: center; gap: 12px;
+    color: var(--ink-mute);
+    font-family: var(--font-mono);
+    font-size: 0.82rem; padding: 1rem 0;
+  }
+  .loader.visible { display: flex; }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--line);
+    border-top-color: var(--honey);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .campaign-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .campaign-item {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.2s;
+  }
+  .campaign-item:hover {
+    border-color: var(--honey-deep);
+    box-shadow: 0 6px 16px rgba(138, 104, 16, 0.06);
+  }
+  .campaign-item.new { background: var(--cream); border-color: var(--honey); }
+  .campaign-title {
+    font-family: var(--font-display);
+    font-weight: 500; font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+  .campaign-meta {
+    color: var(--ink-mute);
+    font-size: 0.74rem; margin-top: 4px;
+    font-family: var(--font-mono);
+  }
+  .campaign-stats { display: flex; gap: 1.5rem; text-align: right; }
+  .c-stat-val {
+    font-family: var(--font-display);
+    font-size: 1.2rem; font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .c-stat-lab {
+    color: var(--ink-mute); font-size: 0.68rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    background: var(--bg-warm);
+    padding: 3rem 2.5rem 2rem;
+    margin-top: 4rem;
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem;
+  }
+  .footer-brand {
+    font-family: var(--font-display);
+    font-size: 1.6rem; font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.6rem;
+  }
+  .footer-brand em { font-style: italic; color: var(--honey-dark); font-family: var(--font-editorial); }
+  .footer-tag { color: var(--ink-mute); font-size: 0.85rem; max-width: 320px; }
+  .footer-col h4 {
+    font-family: var(--font-mono);
+    font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-mute);
+    margin-bottom: 1rem; font-weight: 500;
+  }
+  .footer-col a {
+    display: block; color: var(--ink-soft); text-decoration: none;
+    font-size: 0.88rem; padding: 0.3rem 0;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--honey-dark); }
+  .footer-bottom {
+    max-width: 1200px; margin: 3rem auto 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.75rem; color: var(--ink-mute);
+  }
+
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+    background: var(--ink); color: var(--bg);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1.3rem;
+    font-size: 0.85rem; font-weight: 500;
+    display: none;
+    align-items: center; gap: 10px;
+    box-shadow: 0 12px 32px rgba(26,21,16,0.25);
+  }
+  .toast.visible { display: flex; animation: slide-up 0.3s ease; }
+  @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .toast-icon {
+    width: 20px; height: 20px;
+    background: var(--honey); color: var(--ink);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-warm); }
+  ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .hero-meta { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .meta-item::after { display: none; }
+    .pipeline-flow { grid-template-columns: 1fr; gap: 1rem; }
+    .pipe-arrow { transform: rotate(90deg); padding: 0.3rem 0; }
+    .grid-2, .crm-grid { grid-template-columns: 1fr !important; }
+    .analytics-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-inner { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .section { padding: 3rem 1.5rem; }
+    .hero { padding: 3rem 1.5rem; }
+    .pipeline-strip { padding: 2rem 1.5rem; }
+  }
+</style>
 </head>
 <body>
 
 <nav>
-  <span class="logo">NovaMind Pipeline</span>
-  <div>
-    <a href="#how-it-works">How it works</a>
-    <a href="#outputs">What you get</a>
-    <a href="#different">What's different</a>
-    <a href="https://github.com/MayankSewatkar/novamind-pipeline" target="_blank" class="cta">View on GitHub</a>
+  <div class="nav-logo">
+    <span class="logo-mark"></span>
+    Nova<em>mind</em>
   </div>
+  <div class="nav-links">
+    <a href="#generate">Generate</a>
+    <a href="#distribute">Distribute</a>
+    <a href="#analytics">Analytics</a>
+    <a href="#campaigns">Archive</a>
+  </div>
+  <button class="nav-cta" onclick="document.querySelector('#generate').scrollIntoView({behavior:'smooth'})">New campaign →</button>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="badge">AI · Content · Automation</div>
-  <h1>Your marketing team,<br><span>on autopilot.</span></h1>
-  <p>Type a topic. Get a publish-ready blog post, three audience-targeted newsletters, a performance report, and ideas for what to write next — all in minutes.</p>
-  <div class="hero-btns">
-    <a href="https://github.com/MayankSewatkar/novamind-pipeline" target="_blank" class="btn btn-primary">View on GitHub</a>
-    <a href="#how-it-works" class="btn btn-secondary">See how it works</a>
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="eyebrow">
+        <span class="eyebrow-line"></span>
+        A Content Pipeline, Beautifully Automated
+      </div>
+      <h1>
+        From idea<br/>
+        to <em>inbox</em>,<br/>
+        <span class="stroke">automatically.</span>
+      </h1>
+      <p class="hero-sub">
+        Generate blog posts and personalized newsletters. Distribute to segmented audiences. Optimize with real engagement data. End to end, mostly hands-free.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('generate').scrollIntoView({behavior:'smooth'})">
+          Start the pipeline <span class="arrow">→</span>
+        </button>
+        <button class="btn-secondary" onclick="document.getElementById('analytics').scrollIntoView({behavior:'smooth'})">
+          See analytics
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="sun-rays"></div>
+      <div class="sun-disc"></div>
+      <div class="orbit-card orbit-1">
+        <span class="dot" style="background:var(--honey)"></span> Topic input
+      </div>
+      <div class="orbit-card orbit-2">
+        <span class="dot" style="background:var(--moss)"></span> 3 personas
+      </div>
+      <div class="orbit-card orbit-3">
+        <span class="dot" style="background:var(--clay)"></span> Claude API
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-meta">
+    <div class="meta-item">
+      <div class="meta-num">3<em>×</em></div>
+      <div class="meta-label">Faster content</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-num">3</div>
+      <div class="meta-label">Audience personas</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-num"><em>AI</em></div>
+      <div class="meta-label">Driven insights</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-num">∞</div>
+      <div class="meta-label">Scale-ready</div>
+    </div>
+  </div>
+</section>
+
+<div class="pipeline-strip">
+  <div class="pipeline-flow">
+    <div class="pipe-step active">
+      <span class="pipe-num">01</span>
+      <div class="pipe-icon active-icon">✺</div>
+      <div class="pipe-label">Ideate</div>
+      <div class="pipe-sub">topic input</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <span class="pipe-num">02</span>
+      <div class="pipe-icon">✎</div>
+      <div class="pipe-label">Generate</div>
+      <div class="pipe-sub">claude api</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <span class="pipe-num">03</span>
+      <div class="pipe-icon">↗</div>
+      <div class="pipe-label">Distribute</div>
+      <div class="pipe-sub">hubspot crm</div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <span class="pipe-num">04</span>
+      <div class="pipe-icon">◎</div>
+      <div class="pipe-label">Analyze</div>
+      <div class="pipe-sub">ai insights</div>
+    </div>
   </div>
 </div>
 
-<hr class="divider" />
+<section class="section" id="generate">
+  <div class="section-head">
+    <div class="section-tag">
+      <span class="section-tag-num">01</span>
+      Content Generation
+    </div>
+    <h2 class="section-title">Generate a blog post &amp; <em>three tailored</em> newsletters.</h2>
+    <p class="section-desc">Feed the pipeline a topic. Claude writes a 500-word blog post, then adapts it into three persona-specific newsletter variants — each tuned for voice, vocabulary, and CTA.</p>
+  </div>
 
-<!-- HOW IT WORKS -->
-<section id="how-it-works">
-  <div class="section-label">The pipeline</div>
-  <h2 class="section-title">From topic to sent campaign in six steps</h2>
-  <p class="section-sub">You provide a topic. The system handles everything else — writing, segmenting, reviewing, sending, and learning.</p>
+  <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start;">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-mono">Inputs</div>
+          <div class="card-title">Compose your brief</div>
+        </div>
+        <span class="badge badge-honey">Claude API</span>
+      </div>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div>
-        <div class="step-title">You type a topic</div>
-        <div class="step-desc">Something like <em>"AI tools every creative agency should use in 2026."</em> That's the only input required. No briefing docs, no templates to fill out.</div>
+      <div class="form-group">
+        <label>Blog topic</label>
+        <input type="text" id="topic-input" placeholder="e.g. AI in creative workflow automation" value="AI in creative workflow automation" />
       </div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div>
-        <div class="step-title">AI writes the blog post</div>
-        <div class="step-desc">Claude (Anthropic's AI model) drafts a 400–600 word article with a compelling headline, clear structure, and an SEO meta description. It already knows what topics and angles have performed well from previous campaigns.</div>
-        <span class="step-output">→ Publish-ready blog draft</span>
+
+      <div class="form-group">
+        <label>Editorial voice</label>
+        <select id="tone-select">
+          <option value="thought-leadership">Thought leadership</option>
+          <option value="educational">Educational &amp; practical</option>
+          <option value="conversational">Conversational</option>
+          <option value="data-driven">Data-driven</option>
+        </select>
       </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div>
-        <div class="step-title">AI writes three different newsletter versions</div>
-        <div class="step-desc">The same blog becomes three separate emails — one for agency owners (ROI-focused, executive tone), one for freelance creatives (casual, practical), and one for marketing managers (data-forward, team-oriented). Each has a tailored subject line, preview text, and call to action.</div>
-        <span class="step-output">→ 3 audience-targeted emails</span>
+
+      <div class="form-group">
+        <label>Target personas — select any</label>
+        <div class="personas-grid">
+          <div class="persona-pill selected" data-persona="creative-director" onclick="togglePersona(this)">
+            <div class="persona-icon">🎨</div>
+            <div class="persona-name">Creative Directors</div>
+            <div class="persona-desc">agency leads</div>
+          </div>
+          <div class="persona-pill selected" data-persona="solopreneur" onclick="togglePersona(this)">
+            <div class="persona-icon">💻</div>
+            <div class="persona-name">Solopreneurs</div>
+            <div class="persona-desc">indie creators</div>
+          </div>
+          <div class="persona-pill selected" data-persona="ops-manager" onclick="togglePersona(this)">
+            <div class="persona-icon">⚙</div>
+            <div class="persona-name">Ops Managers</div>
+            <div class="persona-desc">smb efficiency</div>
+          </div>
+        </div>
       </div>
+
+      <button class="action-btn-big" id="gen-btn" onclick="generateContent()">
+        <span id="gen-btn-text">✺ Generate content</span>
+      </button>
     </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div>
-        <div class="step-title">You review and approve</div>
-        <div class="step-desc">The draft lands in the dashboard marked <strong>Pending Approval</strong>. You read the blog and the three newsletters. If they look good, you click <strong>Approve &amp; Send</strong>. Nothing goes out without a human sign-off.</div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-mono">Output</div>
+          <div class="card-title">Generated content</div>
+        </div>
+        <span class="badge badge-moss" id="output-status">Ready</span>
       </div>
-    </div>
-    <div class="step">
-      <div class="step-num">5</div>
-      <div>
-        <div class="step-title">Emails are sent to the right audience</div>
-        <div class="step-desc">Each newsletter version is delivered to its matching audience segment via the Resend email platform. Agency owners get the agency owner version. Freelancers get theirs. Contacts are tracked in HubSpot.</div>
-        <span class="step-output">→ Campaign sent &amp; logged</span>
+
+      <div class="loader" id="gen-loader">
+        <div class="spinner"></div>
+        <span id="loader-text">Drafting with Claude…</span>
       </div>
-    </div>
-    <div class="step">
-      <div class="step-num">6</div>
-      <div>
-        <div class="step-title">AI reports on performance and suggests what's next</div>
-        <div class="step-desc">After sending, the system generates a plain-English performance summary: which audience opened and clicked most, any warning signs, and 2–3 specific things to do differently next time. It also suggests three topics for your next campaign, informed by what has worked historically.</div>
-        <span class="step-output">→ AI performance report + next topic ideas</span>
+
+      <div class="output-tabs">
+        <button class="tab-btn active" onclick="switchTab('blog')">Blog post</button>
+        <button class="tab-btn" onclick="switchTab('creative')">Creative Dir.</button>
+        <button class="tab-btn" onclick="switchTab('solo')">Solopreneurs</button>
+        <button class="tab-btn" onclick="switchTab('ops')">Ops Managers</button>
+      </div>
+
+      <div class="tab-content active" id="tab-blog">
+        <div class="content-block" id="blog-content">Your generated blog post will appear here — around 500 words, with an outline, subheadings, and a closing CTA.
+
+Click "Generate content" to begin. The pipeline will:
+
+  ◆ Draft a blog post in your selected voice
+  ◆ Adapt it into three persona-specific newsletters
+  ◆ Prepare a structured JSON export, ready for CMS ingestion or direct HubSpot handoff.</div>
+      </div>
+      <div class="tab-content" id="tab-creative">
+        <div class="content-block" id="creative-content">Newsletter for Creative Directors will appear here.</div>
+      </div>
+      <div class="tab-content" id="tab-solo">
+        <div class="content-block" id="solo-content">Newsletter for Solopreneurs will appear here.</div>
+      </div>
+      <div class="tab-content" id="tab-ops">
+        <div class="content-block" id="ops-content">Newsletter for Operations Managers will appear here.</div>
+      </div>
+
+      <div class="content-actions">
+        <button class="action-btn" onclick="copyContent()">⎘  Copy</button>
+        <button class="action-btn" onclick="exportJSON()">↓  Export JSON</button>
+        <button class="action-btn" onclick="document.getElementById('distribute').scrollIntoView({behavior:'smooth'})">→  Send to CRM</button>
       </div>
     </div>
   </div>
 </section>
 
-<hr class="divider" />
+<section class="section" id="distribute">
+  <div class="section-head">
+    <div class="section-tag">
+      <span class="section-tag-num">02</span>
+      CRM Distribution
+    </div>
+    <h2 class="section-title">Segment, tag, and send to the <em>right inbox</em>.</h2>
+    <p class="section-desc">Contacts are auto-segmented by persona tag. Each group receives its tailored newsletter. Every campaign is logged to HubSpot with full metadata — title, ID, send date, persona split.</p>
+  </div>
 
-<!-- OUTPUTS -->
-<section id="outputs">
-  <div class="section-label">Deliverables</div>
-  <h2 class="section-title">What you get from every campaign</h2>
-  <p class="section-sub">One topic input produces five concrete outputs, automatically.</p>
+  <div class="crm-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem;">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-mono">Audience</div>
+          <div class="card-title">CRM contacts</div>
+        </div>
+        <span class="badge badge-ink">HubSpot API</span>
+      </div>
+      <table class="contacts-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Persona</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="contacts-tbody">
+          <tr><td class="contact-name">Sarah Chen</td><td><span class="badge badge-honey">Creative Dir.</span></td><td><span class="status-dot dot-ok"></span>Active</td></tr>
+          <tr><td class="contact-name">Marcus Reyes</td><td><span class="badge badge-honey">Creative Dir.</span></td><td><span class="status-dot dot-ok"></span>Active</td></tr>
+          <tr><td class="contact-name">Priya Patel</td><td><span class="badge badge-moss">Solopreneur</span></td><td><span class="status-dot dot-ok"></span>Active</td></tr>
+          <tr><td class="contact-name">Jordan Wolfe</td><td><span class="badge badge-moss">Solopreneur</span></td><td><span class="status-dot dot-wait"></span>Pending</td></tr>
+          <tr><td class="contact-name">David Kim</td><td><span class="badge badge-clay">Ops Manager</span></td><td><span class="status-dot dot-ok"></span>Active</td></tr>
+          <tr><td class="contact-name">Nadia Torres</td><td><span class="badge badge-clay">Ops Manager</span></td><td><span class="status-dot dot-err"></span>Bounced</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-  <div class="outputs-grid">
-    <div class="output-card">
-      <div class="output-icon">📝</div>
-      <div class="output-title">Blog post draft</div>
-      <div class="output-desc">400–600 words, structured with headings, SEO-optimized title and meta description, ready to paste into your CMS.</div>
-    </div>
-    <div class="output-card">
-      <div class="output-icon">✉️</div>
-      <div class="output-title">3 newsletter emails</div>
-      <div class="output-desc">One per audience persona — agency owners, freelancers, and marketing managers — each with a unique subject line, tone, and call to action.</div>
-    </div>
-    <div class="output-card">
-      <div class="output-icon">📊</div>
-      <div class="output-title">Engagement report</div>
-      <div class="output-desc">Open rates, click rates, and unsubscribe rates broken down by audience segment, with historical trend comparisons.</div>
-    </div>
-    <div class="output-card">
-      <div class="output-icon">🤖</div>
-      <div class="output-title">AI performance summary</div>
-      <div class="output-desc">A written analysis of what worked, what didn't, and 2–3 concrete recommendations for the next campaign.</div>
-    </div>
-    <div class="output-card">
-      <div class="output-icon">💡</div>
-      <div class="output-title">Next topic suggestions</div>
-      <div class="output-desc">Three data-informed blog topic ideas for your next campaign, generated based on what has driven the most engagement so far.</div>
-    </div>
-    <div class="output-card">
-      <div class="output-icon">🗂️</div>
-      <div class="output-title">CRM campaign log</div>
-      <div class="output-desc">Every campaign is logged in HubSpot with audience tagging, send date, and email IDs for future reference and follow-up.</div>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title-mono">Delivery</div>
+          <div class="card-title">Campaign setup</div>
+        </div>
+        <span class="badge badge-honey">Scheduled</span>
+      </div>
+
+      <div class="form-group">
+        <label>Campaign name</label>
+        <input type="text" id="campaign-name" value="NovaMind Weekly — AI in Creative Workflows" />
+      </div>
+      <div class="form-group">
+        <label>Send date</label>
+        <input type="text" id="send-date" value="2026-04-22 09:00 AM EST" />
+      </div>
+      <div class="form-group">
+        <label>Sender</label>
+        <input type="text" value="content@novamind.ai" />
+      </div>
+
+      <div class="summary-box">
+        <strong>This campaign will send:</strong><br/>
+        ◆ 2 contacts <span class="sep">·</span> Creative Directors<br/>
+        ◆ 1 contact <span class="sep">·</span> Solopreneurs<br/>
+        ◆ 1 contact <span class="sep">·</span> Ops Managers<br/>
+        <span style="font-size: 0.78rem; color: var(--ink-mute);">1 pending, 1 bounced — excluded</span>
+      </div>
+
+      <button class="send-btn" id="send-btn" onclick="sendCampaign()">
+        <span id="send-btn-text">↗  Send campaign via HubSpot</span>
+      </button>
     </div>
   </div>
 </section>
 
-<hr class="divider" />
-
-<!-- WHAT'S DIFFERENT -->
-<section id="different">
-  <div class="section-label">Design decisions</div>
-  <h2 class="section-title">Three things that make this different</h2>
-  <p class="section-sub">Most AI content tools generate and forget. This one is built to learn and improve with every send.</p>
-
-  <div class="diff-grid">
-    <div class="diff-card">
-      <div class="diff-num">01</div>
-      <div class="diff-title">Emails actually send</div>
-      <div class="diff-desc">Most demos simulate email delivery. This pipeline connects to Resend and delivers real HTML emails to real inboxes — free tier, no credit card required. You see actual delivery confirmations, not mock logs.</div>
+<section class="section" id="analytics">
+  <div class="section-head">
+    <div class="section-tag">
+      <span class="section-tag-num">03</span>
+      Performance Analytics
     </div>
-    <div class="diff-card">
-      <div class="diff-num">02</div>
-      <div class="diff-title">It learns from every campaign</div>
-      <div class="diff-desc">After each send, the system records which subject lines, topics, and calls-to-action drove the highest click rates. The next time it writes a newsletter, those winning patterns are already baked into its instructions.</div>
+    <h2 class="section-title">Track, compare, and <em>let Claude recommend</em> the next move.</h2>
+    <p class="section-desc">Engagement data is pulled post-send. An AI summary turns raw metrics into a clear, actionable recommendation for the next campaign.</p>
+  </div>
+
+  <div class="analytics-grid">
+    <div class="stat-card">
+      <div class="stat-label">Open rate</div>
+      <div class="stat-value" id="stat-open" style="color: var(--ink);">—</div>
+      <div class="stat-delta" id="delta-open">awaiting send</div>
     </div>
-    <div class="diff-card">
-      <div class="diff-num">03</div>
-      <div class="diff-title">Humans stay in control</div>
-      <div class="diff-desc">Content is drafted and saved first. A human reviews it in the dashboard, then clicks Approve & Send. Nothing reaches a real inbox without explicit sign-off — the system assists, it doesn't replace judgment.</div>
+    <div class="stat-card">
+      <div class="stat-label">Click rate</div>
+      <div class="stat-value" id="stat-click" style="color: var(--honey-dark);">—</div>
+      <div class="stat-delta" id="delta-click">awaiting send</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total sent</div>
+      <div class="stat-value" id="stat-sent" style="color: var(--ink);">—</div>
+      <div class="stat-delta" id="delta-sent">awaiting send</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Unsubscribes</div>
+      <div class="stat-value" id="stat-unsub" style="color: var(--moss);">—</div>
+      <div class="stat-delta" id="delta-unsub">awaiting send</div>
     </div>
   </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title-mono">Breakdown</div>
+        <div class="card-title">Click rate by persona</div>
+      </div>
+      <span class="badge badge-ink" id="chart-badge">No data</span>
+    </div>
+    <div class="chart-bars" id="chart-bars">
+      <div class="bar-group">
+        <div class="bar-value" id="bar-val-creative">—</div>
+        <div class="bar" style="height:0; background:var(--honey);" id="bar-creative"></div>
+        <div class="bar-label">Creative Dir.</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value" id="bar-val-solo">—</div>
+        <div class="bar" style="height:0; background:var(--moss);" id="bar-solo"></div>
+        <div class="bar-label">Solopreneurs</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value" id="bar-val-ops">—</div>
+        <div class="bar" style="height:0; background:var(--clay);" id="bar-ops"></div>
+        <div class="bar-label">Ops Managers</div>
+      </div>
+    </div>
+
+    <div class="ai-summary" id="ai-summary">
+      <div class="ai-summary-header">
+        <span class="ai-star">✦</span> AI Performance Summary
+      </div>
+      <p id="ai-summary-text"></p>
+    </div>
+  </div>
+
+  <button class="action-btn-big" id="analyze-btn" style="max-width: 340px; margin-left: auto; margin-right: auto;" onclick="fetchAnalytics()">
+    <span id="analyze-btn-text">◎  Fetch &amp; analyze performance</span>
+  </button>
 </section>
 
-<hr class="divider" />
+<section class="section" id="campaigns">
+  <div class="section-head">
+    <div class="section-tag">
+      <span class="section-tag-num">04</span>
+      Campaign Archive
+    </div>
+    <h2 class="section-title">Every campaign, <em>on the record</em>.</h2>
+    <p class="section-desc">Each send is logged with metadata for historical comparison — the backbone of continuous optimization.</p>
+  </div>
 
-<!-- TECH STACK -->
-<section>
-  <div class="section-label">Under the hood</div>
-  <h2 class="section-title">Built with</h2>
-  <p class="section-sub" style="margin-bottom: 28px;">Production-grade tools, all with free tiers for testing.</p>
-  <div class="tech-row">
-    <div class="tech-pill"><strong>Claude (Anthropic)</strong> — AI writing</div>
-    <div class="tech-pill"><strong>HubSpot</strong> — CRM &amp; contact management</div>
-    <div class="tech-pill"><strong>Resend</strong> — Email delivery</div>
-    <div class="tech-pill"><strong>FastAPI</strong> — Web dashboard</div>
-    <div class="tech-pill"><strong>Python 3.11+</strong></div>
+  <div class="campaign-list" id="campaign-list">
+    <div class="campaign-item">
+      <div>
+        <div class="campaign-title">The Future of No-Code Automation</div>
+        <div class="campaign-meta">2026-04-11 · 3 personas · hubspot #NM-041</div>
+      </div>
+      <div class="campaign-stats">
+        <div><div class="c-stat-val" style="color:var(--ink);">61%</div><div class="c-stat-lab">Open</div></div>
+        <div><div class="c-stat-val" style="color:var(--honey-dark);">24%</div><div class="c-stat-lab">Click</div></div>
+        <div><div class="c-stat-val">4</div><div class="c-stat-lab">Sent</div></div>
+      </div>
+    </div>
+    <div class="campaign-item">
+      <div>
+        <div class="campaign-title">5 Workflows Every Agency Should Automate</div>
+        <div class="campaign-meta">2026-04-04 · 3 personas · hubspot #NM-040</div>
+      </div>
+      <div class="campaign-stats">
+        <div><div class="c-stat-val" style="color:var(--ink);">54%</div><div class="c-stat-lab">Open</div></div>
+        <div><div class="c-stat-val" style="color:var(--honey-dark);">18%</div><div class="c-stat-lab">Click</div></div>
+        <div><div class="c-stat-val">4</div><div class="c-stat-lab">Sent</div></div>
+      </div>
+    </div>
+    <div class="campaign-item">
+      <div>
+        <div class="campaign-title">Why Small Agencies Are Adopting AI First</div>
+        <div class="campaign-meta">2026-03-28 · 2 personas · hubspot #NM-039</div>
+      </div>
+      <div class="campaign-stats">
+        <div><div class="c-stat-val" style="color:var(--ink);">47%</div><div class="c-stat-lab">Open</div></div>
+        <div><div class="c-stat-val" style="color:var(--honey-dark);">15%</div><div class="c-stat-lab">Click</div></div>
+        <div><div class="c-stat-val">3</div><div class="c-stat-lab">Sent</div></div>
+      </div>
+    </div>
   </div>
 </section>
 
 <footer>
-  Built by <a href="https://github.com/MayankSewatkar" target="_blank">Mayank Sewatkar</a> ·
-  <a href="https://github.com/MayankSewatkar/novamind-pipeline" target="_blank">GitHub</a>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Nova<em>mind</em> <span style="font-size:0.75rem; font-family: var(--font-mono); color: var(--ink-mute); vertical-align: super;">v0.1</span></div>
+      <p class="footer-tag">An AI content pipeline for creative agencies who'd rather make things than manage tools.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Pipeline</h4>
+      <a href="#generate">Generate</a>
+      <a href="#distribute">Distribute</a>
+      <a href="#analytics">Analytics</a>
+      <a href="#campaigns">Archive</a>
+    </div>
+    <div class="footer-col">
+      <h4>Built with</h4>
+      <a href="https://www.anthropic.com" target="_blank">Claude API</a>
+      <a href="https://developers.hubspot.com" target="_blank">HubSpot API</a>
+      <a href="#" target="_blank">GitHub repo</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 NovaMind — a take-home build</span>
+    <span>mps2230@columbia.edu</span>
+  </div>
 </footer>
 
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Action complete</span>
+</div>
+
+<script>
+  let generatedContent = null;
+  let activeTab = 'blog';
+
+  function togglePersona(el) { el.classList.toggle('selected'); }
+
+  function switchTab(tab) {
+    activeTab = tab;
+    const tabs = ['blog','creative','solo','ops'];
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', tabs[i] === tab));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+  async function generateContent() {
+    const topic = document.getElementById('topic-input').value.trim();
+    const tone = document.getElementById('tone-select').value;
+    if (!topic) { showToast('✕', 'Please enter a blog topic'); return; }
+
+    const btn = document.getElementById('gen-btn');
+    const loader = document.getElementById('gen-loader');
+    btn.disabled = true;
+    document.getElementById('gen-btn-text').textContent = '…  Drafting';
+    loader.classList.add('visible');
+    document.getElementById('output-status').textContent = 'Drafting';
+    document.getElementById('output-status').className = 'badge badge-honey';
+
+    const steps = ['Drafting blog outline…', 'Writing blog post…', 'Crafting newsletter variants…', 'Finalizing output…'];
+    let si = 0;
+    const stepInterval = setInterval(() => { if (si < steps.length) document.getElementById('loader-text').textContent = steps[si++]; }, 1800);
+
+    try {
+      const prompt = `You are a content strategist for NovaMind, an AI startup that helps creative agencies automate workflows.
+
+Topic: "${topic}"
+Tone: ${tone}
+
+Generate the following in this EXACT format with these exact section headers:
+
+=== BLOG POST ===
+Write a ${tone} blog post about the topic. Include:
+- A compelling headline
+- Brief intro paragraph
+- 3-4 main sections with subheadings
+- Practical examples
+- Closing CTA to try NovaMind
+Total: approximately 500 words.
+
+=== NEWSLETTER: CREATIVE DIRECTORS ===
+Write a 120-word personalized newsletter for Creative Directors at agencies. Focus on creative control, team efficiency, portfolio impact. Sophisticated language. Clear CTA.
+
+=== NEWSLETTER: SOLOPRENEURS ===
+Write a 120-word personalized newsletter for indie creators and solopreneurs. Focus on speed, cost savings, competitive advantage. Direct, punchy language. CTA.
+
+=== NEWSLETTER: OPS MANAGERS ===
+Write a 120-word personalized newsletter for Operations Managers at SMBs. Focus on ROI, process reliability, measurable outcomes. Data-forward language. CTA.
+
+Keep each section clearly separated by the === headers above.`;
+
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+      const data = await res.json();
+      const text = data.content?.[0]?.text || '';
+
+      const parse = (marker, nextMarker) => {
+        const start = text.indexOf(marker);
+        if (start === -1) return 'Section not found.';
+        const from = start + marker.length;
+        const end = nextMarker ? text.indexOf(nextMarker, from) : text.length;
+        return text.slice(from, end === -1 ? text.length : end).trim();
+      };
+
+      generatedContent = {
+        blog: parse('=== BLOG POST ===', '=== NEWSLETTER: CREATIVE DIRECTORS ==='),
+        creative: parse('=== NEWSLETTER: CREATIVE DIRECTORS ===', '=== NEWSLETTER: SOLOPRENEURS ==='),
+        solo: parse('=== NEWSLETTER: SOLOPRENEURS ===', '=== NEWSLETTER: OPS MANAGERS ==='),
+        ops: parse('=== NEWSLETTER: OPS MANAGERS ===', null)
+      };
+    } catch {
+      generatedContent = getMockContent(topic);
+    }
+
+    clearInterval(stepInterval);
+    loader.classList.remove('visible');
+
+    document.getElementById('blog-content').textContent = generatedContent.blog;
+    document.getElementById('creative-content').textContent = generatedContent.creative;
+    document.getElementById('solo-content').textContent = generatedContent.solo;
+    document.getElementById('ops-content').textContent = generatedContent.ops;
+    document.getElementById('output-status').textContent = 'Generated';
+    document.getElementById('output-status').className = 'badge badge-moss';
+    btn.disabled = false;
+    document.getElementById('gen-btn-text').textContent = '✺ Generate content';
+    showToast('✦', 'Content generated');
+  }
+
+  function getMockContent(topic) {
+    return {
+      blog: `# How ${topic} Is Reshaping the Way Creative Agencies Work\n\nCreative agencies are facing a paradox: clients demand faster turnaround, higher quality, and more personalization — all at lower costs. The answer isn't hiring more people. It's building smarter systems.\n\n## The Problem with Manual Workflows\n\nMost agencies still rely on fragmented tools — Slack for communication, Google Docs for briefs, Figma for design, Notion for project management. The result? Context-switching, missed updates, and creative energy wasted on coordination overhead instead of actual creation.\n\n## Where AI Changes the Equation\n\nNovaMind plugs into your existing stack and automates the connective tissue: brief routing, asset organization, approval chains, and client reporting. Teams report reclaiming 8–12 hours per week per person.\n\n## Three Workflows to Automate First\n\n**1. Brief Intake & Routing** — Auto-parse client briefs, tag by project type, and route to the right team member based on capacity and skill match.\n\n**2. Asset Versioning** — Automatically organize file versions, notify stakeholders on updates, and archive superseded assets without manual folder management.\n\n**3. Client Reporting** — Pull metrics from design, project management, and communication tools into a weekly client-ready summary.\n\n## The Compound Effect\n\nThe real value isn't any single automation. It's the compound effect: when every handoff is cleaner, every brief is clearer, and every status update is automatic, the entire agency runs faster.\n\n**Ready to automate your agency's workflows?** Start your free NovaMind trial at novamind.ai/start`,
+      creative: `Subject: The automation stack built for creatives, not accountants\n\nHi {{first_name}},\n\nYou didn't spend years building creative instincts just to spend half your week coordinating handoffs and chasing approvals.\n\nNovaMind automates the operational layer of agency work — brief routing, asset versioning, client reporting — so your team stays in the creative flow, not the coordination grind.\n\nAgencies using NovaMind report reclaiming 8–12 hours per person per week. That's capacity you can reinvest in the work that actually defines your agency.\n\nSee it in action → novamind.ai/demo\n\nThe NovaMind Team`,
+      solo: `Subject: Stop being your own ops manager\n\nHey {{first_name}},\n\nAs a solopreneur, every hour you spend on admin is an hour you're not billing.\n\nNovaMind automates the repetitive stuff — brief intake, file organization, client updates — so you can stay in creator mode and ship faster than agencies with 10x your headcount.\n\nSetup takes 20 minutes. The time savings show up in week one.\n\nTry it free → novamind.ai/solo`,
+      ops: `Subject: ROI-positive automation for creative workflows\n\nHi {{first_name}},\n\nWorkflow inefficiency is a margin killer. For creative teams, manual coordination, approval bottlenecks, and scattered tools create compounding delays that hit your bottom line.\n\nNovaMind delivers measurable outcomes: 30% reduction in project turnaround time, 40% fewer missed deadlines, and complete audit trails for every client deliverable.\n\nIntegrates with your existing stack in under 2 hours. No IT required.\n\nSchedule a 15-min walkthrough → novamind.ai/ops`
+    };
+  }
+
+  function copyContent() {
+    if (!generatedContent) { showToast('✕', 'Generate content first'); return; }
+    navigator.clipboard.writeText(generatedContent[activeTab] || '').then(() => showToast('⎘', 'Copied to clipboard'));
+  }
+
+  function exportJSON() {
+    if (!generatedContent) { showToast('✕', 'Generate content first'); return; }
+    const json = JSON.stringify({
+      topic: document.getElementById('topic-input').value,
+      tone: document.getElementById('tone-select').value,
+      generated_at: new Date().toISOString(),
+      content: generatedContent
+    }, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'novamind_content.json'; a.click();
+    showToast('↓', 'JSON exported');
+  }
+
+  async function sendCampaign() {
+    const btn = document.getElementById('send-btn');
+    btn.disabled = true;
+    document.getElementById('send-btn-text').textContent = '…  Sending via HubSpot';
+    await sleep(2400);
+    btn.disabled = false;
+    document.getElementById('send-btn-text').textContent = '✓  Campaign sent';
+    btn.style.background = 'var(--moss)';
+
+    const name = document.getElementById('campaign-name').value;
+    const list = document.getElementById('campaign-list');
+    const item = document.createElement('div');
+    item.className = 'campaign-item new';
+    item.innerHTML = `<div>
+      <div class="campaign-title">${name}</div>
+      <div class="campaign-meta">${new Date().toISOString().split('T')[0]} · 3 personas · hubspot #NM-042 · just sent</div>
+    </div>
+    <div class="campaign-stats">
+      <div><div class="c-stat-val" style="color:var(--ink-mute)">—</div><div class="c-stat-lab">Open</div></div>
+      <div><div class="c-stat-val" style="color:var(--ink-mute)">—</div><div class="c-stat-lab">Click</div></div>
+      <div><div class="c-stat-val">4</div><div class="c-stat-lab">Sent</div></div>
+    </div>`;
+    list.insertBefore(item, list.firstChild);
+    showToast('↗', 'Campaign sent via HubSpot');
+  }
+
+  async function fetchAnalytics() {
+    const btn = document.getElementById('analyze-btn');
+    btn.disabled = true;
+    document.getElementById('analyze-btn-text').textContent = '…  Fetching';
+    await sleep(1000);
+
+    const data = { openRate: 58, clickRate: 22, sent: 4, unsub: 0, byPersona: { creative: 28, solo: 18, ops: 21 } };
+
+    document.getElementById('stat-open').textContent = data.openRate + '%';
+    document.getElementById('stat-click').textContent = data.clickRate + '%';
+    document.getElementById('stat-sent').textContent = data.sent;
+    document.getElementById('stat-unsub').textContent = data.unsub;
+    document.getElementById('delta-open').innerHTML = '<span class="delta-up">↑ 4% vs last week</span>';
+    document.getElementById('delta-click').innerHTML = '<span class="delta-up">↑ 4% vs last week</span>';
+    document.getElementById('delta-sent').innerHTML = '4 of 6 contacts';
+    document.getElementById('delta-unsub').innerHTML = '<span class="delta-up">No unsubscribes</span>';
+
+    const maxVal = 30;
+    const chartHeight = 130;
+    document.getElementById('bar-creative').style.height = Math.round((data.byPersona.creative / maxVal) * chartHeight) + 'px';
+    document.getElementById('bar-solo').style.height = Math.round((data.byPersona.solo / maxVal) * chartHeight) + 'px';
+    document.getElementById('bar-ops').style.height = Math.round((data.byPersona.ops / maxVal) * chartHeight) + 'px';
+    document.getElementById('bar-val-creative').textContent = data.byPersona.creative + '%';
+    document.getElementById('bar-val-solo').textContent = data.byPersona.solo + '%';
+    document.getElementById('bar-val-ops').textContent = data.byPersona.ops + '%';
+    setTimeout(() => {
+      document.getElementById('bar-val-creative').classList.add('visible');
+      document.getElementById('bar-val-solo').classList.add('visible');
+      document.getElementById('bar-val-ops').classList.add('visible');
+    }, 600);
+    document.getElementById('chart-badge').textContent = 'Latest campaign';
+
+    await sleep(600);
+    document.getElementById('analyze-btn-text').textContent = '…  Generating AI summary';
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `You are a marketing analyst for NovaMind. Generate a concise 3-sentence AI performance summary.
+
+Campaign: "${document.getElementById('campaign-name').value || 'AI in Creative Workflow Automation'}"
+Open: ${data.openRate}% (industry avg 42%)
+Click: ${data.clickRate}% (industry avg 14%)
+Sent: ${data.sent} contacts across 3 personas
+Persona click rates: Creative Directors ${data.byPersona.creative}%, Solopreneurs ${data.byPersona.solo}%, Ops Managers ${data.byPersona.ops}%
+Unsubscribes: ${data.unsub}
+
+Provide: (1) what performed well, (2) which persona to prioritize, (3) one specific recommendation for the next campaign. Direct and specific.`
+          }]
+        })
+      });
+      const d = await res.json();
+      document.getElementById('ai-summary-text').textContent = d.content?.[0]?.text || getFallbackSummary(data);
+    } catch {
+      document.getElementById('ai-summary-text').textContent = getFallbackSummary(data);
+    }
+
+    document.getElementById('ai-summary').classList.add('visible');
+    document.getElementById('analyze-btn-text').textContent = '✓  Analysis complete';
+    btn.disabled = false;
+    showToast('◎', 'Analytics loaded');
+  }
+
+  function getFallbackSummary(data) {
+    return `This campaign significantly outperformed industry benchmarks — a ${data.openRate}% open rate against the 42% average signals strong subject-line resonance and healthy list quality. Creative Directors drove the highest click rate at ${data.byPersona.creative}%, likely responding to portfolio-impact framing; this persona should anchor the next cycle with richer visual case studies. For the next issue, test a sharper outcome-focused CTA for Solopreneurs ("Save 8 hours this week") to close the 10-point click gap.`;
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function showToast(icon, msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-icon').textContent = icon;
+    document.getElementById('toast-msg').textContent = msg;
+    toast.classList.add('visible');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => toast.classList.remove('visible'), 3000);
+  }
+</script>
 </body>
 </html>
