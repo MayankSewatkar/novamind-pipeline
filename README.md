@@ -1,6 +1,7 @@
 # NovaMind — AI-Powered Marketing Content Pipeline
 
 **Live site:** https://mayanksewatkar.github.io/novamind-pipeline/
+
 **Backend API:** https://novamind-pipeline-production.up.railway.app
 
 ## What This Does (Plain English)
