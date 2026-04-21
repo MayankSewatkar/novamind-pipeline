@@ -1230,58 +1230,17 @@ Click "Generate content" to begin. The pipeline will:
     const stepInterval = setInterval(() => { if (si < steps.length) document.getElementById('loader-text').textContent = steps[si++]; }, 1800);
 
     try {
-      const prompt = `You are a content strategist for NovaMind, an AI startup that helps creative agencies automate workflows.
-
-Topic: "${topic}"
-Tone: ${tone}
-
-Generate the following in this EXACT format with these exact section headers:
-
-=== BLOG POST ===
-Write a ${tone} blog post about the topic. Include:
-- A compelling headline
-- Brief intro paragraph
-- 3-4 main sections with subheadings
-- Practical examples
-- Closing CTA to try NovaMind
-Total: approximately 500 words.
-
-=== NEWSLETTER: CREATIVE DIRECTORS ===
-Write a 120-word personalized newsletter for Creative Directors at agencies. Focus on creative control, team efficiency, portfolio impact. Sophisticated language. Clear CTA.
-
-=== NEWSLETTER: SOLOPRENEURS ===
-Write a 120-word personalized newsletter for indie creators and solopreneurs. Focus on speed, cost savings, competitive advantage. Direct, punchy language. CTA.
-
-=== NEWSLETTER: OPS MANAGERS ===
-Write a 120-word personalized newsletter for Operations Managers at SMBs. Focus on ROI, process reliability, measurable outcomes. Data-forward language. CTA.
-
-Keep each section clearly separated by the === headers above.`;
-
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("https://novamind-pipeline-production.up.railway.app/api/generate-content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }]
-        })
+        body: JSON.stringify({ topic, tone })
       });
       const data = await res.json();
-      const text = data.content?.[0]?.text || '';
-
-      const parse = (marker, nextMarker) => {
-        const start = text.indexOf(marker);
-        if (start === -1) return 'Section not found.';
-        const from = start + marker.length;
-        const end = nextMarker ? text.indexOf(nextMarker, from) : text.length;
-        return text.slice(from, end === -1 ? text.length : end).trim();
-      };
-
       generatedContent = {
-        blog: parse('=== BLOG POST ===', '=== NEWSLETTER: CREATIVE DIRECTORS ==='),
-        creative: parse('=== NEWSLETTER: CREATIVE DIRECTORS ===', '=== NEWSLETTER: SOLOPRENEURS ==='),
-        solo: parse('=== NEWSLETTER: SOLOPRENEURS ===', '=== NEWSLETTER: OPS MANAGERS ==='),
-        ops: parse('=== NEWSLETTER: OPS MANAGERS ===', null)
+        blog: data.blog || '',
+        creative: data.creative || '',
+        solo: data.solo || '',
+        ops: data.ops || ''
       };
     } catch {
       generatedContent = getMockContent(topic);
@@ -1391,29 +1350,20 @@ Keep each section clearly separated by the === headers above.`;
     document.getElementById('analyze-btn-text').textContent = '…  Generating AI summary';
 
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("https://novamind-pipeline-production.up.railway.app/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: `You are a marketing analyst for NovaMind. Generate a concise 3-sentence AI performance summary.
-
-Campaign: "${document.getElementById('campaign-name').value || 'AI in Creative Workflow Automation'}"
-Open: ${data.openRate}% (industry avg 42%)
-Click: ${data.clickRate}% (industry avg 14%)
-Sent: ${data.sent} contacts across 3 personas
-Persona click rates: Creative Directors ${data.byPersona.creative}%, Solopreneurs ${data.byPersona.solo}%, Ops Managers ${data.byPersona.ops}%
-Unsubscribes: ${data.unsub}
-
-Provide: (1) what performed well, (2) which persona to prioritize, (3) one specific recommendation for the next campaign. Direct and specific.`
-          }]
+          campaign_name: document.getElementById('campaign-name').value || 'AI in Creative Workflow Automation',
+          open_rate: data.openRate,
+          click_rate: data.clickRate,
+          sent: data.sent,
+          unsub: data.unsub,
+          persona_clicks: { creative: data.byPersona.creative, solo: data.byPersona.solo, ops: data.byPersona.ops }
         })
       });
       const d = await res.json();
-      document.getElementById('ai-summary-text').textContent = d.content?.[0]?.text || getFallbackSummary(data);
+      document.getElementById('ai-summary-text').textContent = d.summary || getFallbackSummary(data);
     } catch {
       document.getElementById('ai-summary-text').textContent = getFallbackSummary(data);
     }
