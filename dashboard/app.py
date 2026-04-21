@@ -4,15 +4,87 @@ import json
 import sys
 from pathlib import Path
 
+import anthropic as anthropic_lib
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from config import ANALYTICS_DIR, CAMPAIGNS_DIR, CONTENT_DIR
+from config import ANALYTICS_DIR, ANTHROPIC_API_KEY, CAMPAIGNS_DIR, CLAUDE_MODEL, CONTENT_DIR
 from pipeline import content_generator, crm_manager, analytics as analytics_module
 
 app = FastAPI(title="NovaMind Pipeline Dashboard")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
+
+
+# ── JSON API models ────────────────────────────────────────────────────────────
+
+class GenerateRequest(BaseModel):
+    topic: str
+    tone: str = "professional"
+
+
+class AnalyzeRequest(BaseModel):
+    campaign_name: str
+    open_rate: int
+    click_rate: int
+    sent: int
+    unsub: int
+    persona_clicks: dict
+
+
+# ── JSON API endpoints ─────────────────────────────────────────────────────────
+
+@app.post("/api/generate-content")
+async def api_generate_content(body: GenerateRequest):
+    blog = content_generator.generate_blog(body.topic)
+    newsletters = content_generator.generate_newsletters(blog)
+
+    def fmt(nl: dict) -> str:
+        return f"Subject: {nl.get('subject_line', '')}\nPreview: {nl.get('preview_text', '')}\n\n{nl.get('body', '')}"
+
+    return JSONResponse({
+        "blog": blog.get("draft", ""),
+        "creative": fmt(newsletters.get("creative_freelancer", {})),
+        "solo": fmt(newsletters.get("agency_owner", {})),
+        "ops": fmt(newsletters.get("marketing_manager", {})),
+    })
+
+
+@app.post("/api/analyze")
+async def api_analyze(body: AnalyzeRequest):
+    client = anthropic_lib.Anthropic(api_key=ANTHROPIC_API_KEY)
+    response = client.messages.create(
+        model=CLAUDE_MODEL,
+        max_tokens=400,
+        system=(
+            "You are a growth analyst at NovaMind. Write crisp, data-forward performance "
+            "summaries. Be specific — reference actual numbers from the data."
+        ),
+        messages=[{
+            "role": "user",
+            "content": (
+                f"Campaign: \"{body.campaign_name}\"\n"
+                f"Open rate: {body.open_rate}% (industry avg 42%)\n"
+                f"Click rate: {body.click_rate}% (industry avg 14%)\n"
+                f"Sent: {body.sent} contacts | Unsubscribes: {body.unsub}\n"
+                f"Clicks by persona: Creative Directors {body.persona_clicks.get('creative', 0)}%, "
+                f"Solopreneurs {body.persona_clicks.get('solo', 0)}%, "
+                f"Ops Managers {body.persona_clicks.get('ops', 0)}%\n\n"
+                "Write 3 sentences: (1) what performed well, "
+                "(2) which persona to prioritize, (3) one specific next-campaign recommendation."
+            ),
+        }],
+    )
+    return JSONResponse({"summary": response.content[0].text})
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
 
